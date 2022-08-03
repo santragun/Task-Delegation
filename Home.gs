@@ -1,53 +1,43 @@
-function CollectFormValues() {
+function onOpen(e) {
   try {
-    let departments = EMPLOYEE_DB.getSheetByName('departments').getDataRange().getValues();
-    let employees = EMPLOYEE_DB.getSheetByName('employees').getDataRange().getValues();
+    let menu = FormApp.getUi().createAddonMenu();
 
-    let formQuestions = FORM.getItems();
-
-    for (var i = 0; i < formQuestions.length; i++) {
-      if (formQuestions[i].getTitle() == 'Task Type') {
-        try {
-          let list = formQuestions[i].asListItem();
-          let choices = [];
-          for (var j = 1; j < departments.length; j++) {
-            choices.push(list.createChoice(departments[j][0]));
-          }
-          list.setChoices(choices);
-        }
-        catch ({ message }) {
-          Logger.log('Departments list Exception: ' + message);
-        }
-
-      }
-      try {
-        if (formQuestions[i].getTitle() == 'Assigned To') {
-          let list = formQuestions[i].asListItem();
-          let choices = [];
-          for (var j = 1; j < employees.length; j++) {
-            choices.push(list.createChoice(employees[j][0]));
-          }
-          list.setChoices(choices);
-        }
-
-        if (formQuestions[i].getTitle() == 'Assigned By') {
-          let list = formQuestions[i].asListItem();
-          let choices = [];
-          for (var j = 1; j < employees.length; j++) {
-            choices.push(list.createChoice(employees[j][0]));
-          }
-          list.setChoices(choices);
-        }
-      }
-      catch ({ message }) {
-        Logger.log('Employees list Exception: ' + message);
-      }
+    if (!documentProperties.getProperty('onOpen')) {
+      menu.addItem('Start Task Delegation Add-on', 'AddonStatus');
     }
-
+    else {
+      menu.addItem('Check Task Delegation Add-on', 'AddonStatus');
+    }
+    menu.addToUi();
   }
-  catch ({ message }) {
-    Logger.log('CollectFormValues Exception: ' + message);
+  catch (message) {
+    Logger.log('onOpen:  %s', message);
   }
-
-
 }
+
+function onInstall(e) {
+  onOpen(e);
+}
+
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename)
+      .getContent();
+}
+
+
+function AddonStatus() {
+  // form = FormApp.getActiveForm();
+  // MailApp.sendEmail()
+  // UrlFetchApp.fetch('');
+
+  let configure = CollectFormValues();
+  if (configure == 'authorize') {
+    var authorizationHtml = HtmlService.createTemplateFromFile('authorization').evaluate();
+    return FormApp.getUi().showModalDialog(authorizationHtml, 'Authorization');
+  }
+  else {
+    return FormApp.getUi().showModalDialog(HtmlService.createHtmlOutput('Add-on is running successfully'), 'Task Delegation Add-on Status');
+  }
+}
+

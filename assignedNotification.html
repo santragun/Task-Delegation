@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('stylesheet'); ?>
+</head>
+
+<body>
+  <div class="topnav">
+    <p style="font-family : verdana; font-size : 14px;color:black;">Hello
+      <?=responses[2].getResponse() ?> task has been assigned to you
+    </p>
+  </div>
+
+  <p> Please reply to this form</br> <?= form ?></p>
+  
+  <div id="main">
+    <table>
+      <thead>
+        <tr id="response-name" class="title">
+          <th colspan="2">Task Details</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <? for (let i = 0; i < responses.length; i++) { ?>
+        <tr>
+          <td style="color:black;">
+            <?= responses[i].getItem().getTitle() ?>
+          </td>
+          <td style="color:black;">
+            <?= responses[i].getResponse() ?>
+          </td>
+        </tr>
+        <? } ?>
+
+      </tbody>
+    </table>
+</body>
+
+</html>
